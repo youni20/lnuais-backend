@@ -18,6 +18,28 @@ module.exports = (req, res, next) => {
     if (routeAliases[key]) {
         console.log(`🔄 Route alias: ${req.path} → ${routeAliases[key]}`);
         req.url = routeAliases[key]; // Update url to new path
+
+        // Legacy Payload Transformation for Registration
+        if (key === 'POST /users/new_member' && req.body) {
+            console.log('🔄 Transforming legacy registration payload...');
+
+            // Map fields
+            if (req.body.name) req.body.full_name = req.body.name;
+            if (req.body.program) req.body.programme = req.body.program;
+
+            // Map experience level
+            const levelMap = {
+                'LOW': 'Beginner',
+                'MID': 'Intermediate',
+                'HIGH': 'Advanced'
+            };
+            if (req.body.level && levelMap[req.body.level]) {
+                req.body.experience_level = levelMap[req.body.level];
+            } else if (req.body.level) {
+                // Fallback
+                req.body.experience_level = 'Beginner';
+            }
+        }
     }
     next();
 };
