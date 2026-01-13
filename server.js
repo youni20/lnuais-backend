@@ -11,6 +11,9 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(morgan('dev'));
 app.use(express.json());
+const compatibilityMiddleware = require('./src/middleware/compatibility');
+app.use(compatibilityMiddleware);
+
 const session = require('express-session');
 const pgSession = require('connect-pg-simple')(session);
 const passport = require('./src/config/passport');
