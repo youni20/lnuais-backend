@@ -1,7 +1,11 @@
 const User = require('../models/User');
 const { sendWelcomeEmail } = require('../utils/emailService');
 
-// Register new user
+/**
+ * Register a new user
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 exports.registerUser = async (req, res) => {
     try {
         const { full_name, email, programme, experience_level } = req.body;
@@ -29,7 +33,11 @@ exports.registerUser = async (req, res) => {
     }
 };
 
-// Get all users (with pagination)
+/**
+ * Get all users with pagination
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 exports.getAllUsers = async (req, res) => {
     try {
         const { page = 1, limit = 10 } = req.query;
@@ -53,7 +61,11 @@ exports.getAllUsers = async (req, res) => {
     }
 };
 
-// Get single user
+/**
+ * Get a single user by ID
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 exports.getUserById = async (req, res) => {
     try {
         const user = await User.findByPk(req.params.id);
@@ -67,7 +79,11 @@ exports.getUserById = async (req, res) => {
     }
 };
 
-// Update user
+/**
+ * Update a user
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 exports.updateUser = async (req, res) => {
     try {
         const { full_name, programme, experience_level } = req.body;
@@ -90,7 +106,11 @@ exports.updateUser = async (req, res) => {
     }
 };
 
-// Delete user
+/**
+ * Delete a user
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 exports.deleteUser = async (req, res) => {
     try {
         const user = await User.findByPk(req.params.id);
