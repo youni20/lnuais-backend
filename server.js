@@ -17,7 +17,6 @@ app.use(compatibilityMiddleware);
 const session = require('express-session');
 const pgSession = require('connect-pg-simple')(session);
 const passport = require('./src/config/passport');
-const { sequelize } = require('./src/config/database');
 
 // Session configuration
 app.use(session({
