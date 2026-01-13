@@ -22,7 +22,11 @@ const passport = require('./src/config/passport');
 app.use(session({
     store: new pgSession({
         conObject: {
-            connectionString: `postgres://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`, // Construct connection string explicitly
+            connectionString: `postgres://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`,
+            ssl: {
+                require: true,
+                rejectUnauthorized: false
+            } // Enable SSL for RDS connection
         },
         tableName: 'session',
         createTableIfMissing: true

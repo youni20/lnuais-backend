@@ -12,7 +12,9 @@ const routeAliases = {
     // frontend uses /users/new_member in signup.html which maps to register
     'POST /users/new_member': '/api/users/register',
     // Verification alias
-    'POST /users/verify': '/api/auth/verify-email'
+    'POST /users/verify': '/api/auth/verify-email',
+    // Profile alias
+    'GET /users/profile': '/api/auth/current-user'
 };
 
 module.exports = (req, res, next) => {

@@ -34,7 +34,26 @@ exports.verifyEmail = async (req, res) => {
         // Send welcome email
         await sendWelcomeEmail(email, user.full_name);
 
-        res.json({ message: 'Email verified successfully! You can now log in.' });
+        // Auto-login
+        req.login(user, (err) => {
+            if (err) {
+                console.error('Auto-login error after verification:', err);
+                // Even if login fails, verification succeeded, so tell them to login manually
+                return res.json({ message: 'Email verified! Please log in.' });
+            }
+            res.json({
+                message: 'Email verified successfully! Logging you in...',
+                user: {
+                    id: user.id,
+                    full_name: user.full_name,
+                    email: user.email,
+                    programme: user.programme,
+                    experience_level: user.experience_level,
+                    is_verified: true
+                }
+            });
+        });
+
     } catch (error) {
         console.error('Verification error:', error);
         res.status(500).json({ error: 'Verification failed' });
