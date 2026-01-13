@@ -3,6 +3,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 const sequelize = require('./src/config/database');
 require('dotenv').config();
+const errorHandler = require('./src/middleware/errorHandler');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -28,6 +29,9 @@ app.use('/api/users', userRoutes);
 app.get('/api/health', (req, res) => {
     res.status(200).json({ status: 'OK', timestamp: new Date() });
 });
+
+// Error Handler
+app.use(errorHandler);
 
 // Database Connection and Server Start
 const startServer = async () => {
