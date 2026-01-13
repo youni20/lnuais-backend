@@ -49,6 +49,11 @@ const User = sequelize.define('User', {
         type: DataTypes.BOOLEAN,
         defaultValue: false
     },
+    enabled: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true, // Assuming new users are enabled by default
+        allowNull: false
+    },
     reset_password_token: {
         type: DataTypes.STRING(6),
         allowNull: true
