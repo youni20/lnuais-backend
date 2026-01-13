@@ -1,29 +1,26 @@
 # LNU AIS Backend
 
-Complete Express.js/Node.js backend for the LNU AIS student organization website.
+Complete Express.js/Node.js backend for the Linnaeus University AI Society website.
+
+## Features
+
+- ✅ **User Management**: Registration, Profile Updates, Listing
+- ✅ **Authentication**:
+    - Google OAuth 2.0
+    - Email/Password Login
+    - Email Verification (6-digit codes)
+    - Password Reset
+    - Session Management (PostgreSQL store)
+- ✅ **Security**: bcrypt hashing, CORS, Helmet (recommended), Protected Routes
+- ✅ **Infrastructure**: AWS RDS (PostgreSQL), AWS Elastic Beanstalk ready
 
 ## Tech Stack
 - **Runtime**: Node.js
 - **Framework**: Express.js
 - **Database**: PostgreSQL (AWS RDS)
 - **ORM**: Sequelize
-- **Email**: Nodemailer
-- **Deployment**: AWS Elastic Beanstalk (Ready)
-
-## Project Structure
-```
-lnuais-backend/
-├── src/
-│   ├── config/       # Database configuration
-│   ├── controllers/  # Route logic
-│   ├── middleware/   # Validation and Error handling
-│   ├── models/       # Sequelize models
-│   ├── routes/       # API route definitions
-│   └── utils/        # Utility functions (Email)
-├── .env.example      # Environment variables template
-├── server.js         # Entry point
-└── README.md         # This file
-```
+- **Auth**: Passport.js (Google), bcrypt, express-session
+- **Email**: Nodemailer (Gmail SMTP)
 
 ## Setup & Local Development
 
@@ -38,81 +35,68 @@ lnuais-backend/
    npm install
    ```
 
-3. **Configure Environment Variables**
-   - Create a `.env` file in the root directory.
-   - Copy contents from `.env.example`:
-     ```bash
-     cp .env.example .env
-     ```
-   - Fill in your database and email credentials.
+3. **Environment Variables**
+   Create a `.env` file based on `.env.example`:
+   ```env
+   PORT=5000
+   DB_HOST=...
+   DB_USER=...
+   DB_PASSWORD=...
+   DB_NAME=postgres
+   
+   GOOGLE_CLIENT_ID=...
+   GOOGLE_CLIENT_SECRET=...
+   
+   MAIL_USERNAME=...
+   MAIL_PASSWORD=...
+   
+   SESSION_SECRET=...
+   FRONTEND_URL=http://localhost:3000
+   NODE_ENV=development
+   ```
 
 4. **Run the server**
-   - Development (with hot-reload):
-     ```bash
-     npm run dev
-     ```
-   - Production:
-     ```bash
-     npm start
-     ```
+   ```bash
+   npm run dev
+   ```
 
 ## API Endpoints
 
-### Health Check 
-- **GET** `/api/health`
-  - Returns server status.
+### Authentication
+- **POST** `/api/auth/login`: Login with email/password.
+- **POST** `/api/auth/verify-email`: Verify account with code.
+- **GET** `/api/auth/google`: Start Google OAuth flow.
+- **POST** `/api/auth/request-password-reset`: Request reset code.
+- **POST** `/api/auth/reset-password`: Reset password with code.
+- **GET** `/api/auth/logout`: Logout.
+- **GET** `/api/auth/current-user`: Get session user.
 
 ### Users
-- **POST** `/api/users/register`
-  - Register a new user.
-  - Body: `{ full_name, email, programme, experience_level }`
-- **GET** `/api/users`
-  - Get all users (paginated).
-  - Query: `?page=1&limit=10`
-- **GET** `/api/users/:id`
-  - Get user details by ID.
-- **PUT** `/api/users/:id`
-  - Update user details.
-- **DELETE** `/api/users/:id`
-  - Delete a user.
+- **POST** `/api/users/register`: Register new user.
+- **GET** `/api/users`: Get all users (paginated).
+- **GET** `/api/users/:id`: Get user details.
+- **PUT** `/api/users/:id`: Update user (Protected).
+- **DELETE** `/api/users/:id`: Delete user (Protected).
 
 ## Deployment to AWS Elastic Beanstalk
 
-1. **Prerequisites**
-   - AWS CLI installed and configured.
-   - EB CLI installed (`pip install awsebcli`).
-
-2. **Initialize EB Application**
+1. **Initialize EB**
    ```bash
-   eb init
-   # Select region (eu-north-1)
-   # Select Node.js platform
-   # Do not set up SSH unless needed
+   eb init -p node.js lnuais-backend --region eu-north-1
    ```
 
-3. **Set Environment Variables on EB**
-   ```bash
-   eb setenv PORT=5000 DB_HOST=... DB_USER=... DB_PASS=...
-   ```
-   *Note: Ensure all `.env` variables are set in the EB environment configuration.*
-
-4. **Deploy**
+2. **Create Environment**
    ```bash
    eb create lnuais-backend-prod
-   # Or if already created:
-   eb deploy
    ```
 
-5. **Open**
+3. **Set Environment Variables**
    ```bash
-   eb open
+   eb setenv DB_HOST=... GOOGLE_CLIENT_ID=... # Set all vars
    ```
 
 ## Database Schema
-The application uses **Sequelize** to automatically sync the schema. On start, it will create/update the `users` table:
-- `id` (Integer, PK)
-- `full_name` (Text)
-- `email` (Text, Unique)
-- `programme` (Text)
-- `experience_level` (Enum: Beginner, Intermediate, Advanced)
-- `created_at`, `updated_at` (Timestamp)
+The `users` table includes:
+- OAuth fields (`google_id`)
+- Verification fields (`verification_code`, `is_verified`)
+- Standard profile fields (`full_name`, `email`, `programme`)
