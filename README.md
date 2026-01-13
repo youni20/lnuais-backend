@@ -60,6 +60,22 @@ Complete Express.js/Node.js backend for the Linnaeus University AI Society websi
    npm run dev
    ```
 
+   npm run dev
+   ```
+
+## Frontend Integration
+
+### Endpoint Compatibility
+For backward compatibility with the frontend, the following aliases are supported:
+
+| Old Endpoint | New Endpoint |
+|-------------|--------------|
+| `POST /users/login` | `POST /api/auth/login` |
+| `POST /users/verify-email` | `POST /api/auth/verify-email` |
+| `GET /users/google` | `GET /api/auth/google` |
+| `GET /users/logout` | `GET /api/auth/logout` |
+| `POST /users/new_member` | `POST /api/users/register` |
+
 ## API Endpoints
 
 ### Authentication
