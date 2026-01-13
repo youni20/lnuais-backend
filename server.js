@@ -65,21 +65,37 @@ app.get('/api/health', (req, res) => {
 // Error Handler
 app.use(errorHandler);
 
+console.log('Environment check:');
+console.log('DB_HOST:', process.env.DB_HOST);
+console.log('PORT:', process.env.PORT);
+console.log('MAIL_USERNAME:', process.env.MAIL_USERNAME);
+console.log('GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID ? 'Set ✅' : 'Missing ❌');
+
 // Database Connection and Server Start
 const startServer = async () => {
     try {
         await sequelize.authenticate();
-        console.log('Database connection has been established successfully.');
+        console.log('✅ Database connected');
 
         // Sync models (create tables)
-        await sequelize.sync({ alter: true }); // Alter ensures schema updates without data loss during dev
-        console.log('Database synchronized.');
+        // await sequelize.sync({ alter: true }); 
+        await sequelize.sync(); // Try without alter first to verify connection/startup
+        console.log('✅ Database synchronized');
 
-        app.listen(PORT, () => {
-            console.log(`Server is running on port ${PORT}`);
+        const server = app.listen(PORT, () => {
+            console.log(`✅ Server running on port ${PORT}`);
+        });
+
+        server.on('error', (err) => {
+            if (err.code === 'EADDRINUSE') {
+                console.error(`❌ Port ${PORT} is already in use`);
+            } else {
+                console.error('❌ Server error:', err);
+            }
         });
     } catch (error) {
-        console.error('Unable to connect to the database:', error);
+        console.error('❌ Database connection failed:', error);
+        process.exit(1);
     }
 };
 
