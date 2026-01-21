@@ -14,7 +14,9 @@ app.enable('trust proxy'); // essential for properly handling X-Forwarded-Proto 
 app.use(cors({
     origin: [
         'https://prod.dy1i4sfv0u39q.amplifyapp.com', // Old one
-        'https://prod.d2pwipsvk7jchw.amplifyapp.com', // Your CURRENT one (from error message)
+        'https://prod.d2pwipsvk7jchw.amplifyapp.com', // Your Amplify domain
+        'https://lnuais.com',                        // New Custom Domain
+        'https://www.lnuais.com',                    // New Custom Domain (www)
         'https://prod.dhplo653bqz9b.amplifyapp.com',
         'https://dgzvl0b4x5nn2.cloudfront.net',      // CloudFront domain
         'http://localhost:3000',

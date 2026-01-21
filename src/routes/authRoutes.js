@@ -11,11 +11,18 @@ router.post('/request-password-reset', authController.requestPasswordReset);
 router.post('/reset-password', authController.resetPassword);
 
 // Google OAuth
+// Google OAuth
 router.get('/google', (req, res, next) => {
-    // Force HTTPS for the callback URL to match Google Console configuration
-    // This fixes the issue where the backend sees 'http' from the proxy but Google expects 'https'
-    // Force Callback to go to Frontend Domain (Amplify) so cookies are set on the correct domain
-    const callbackURL = 'https://prod.d2pwipsvk7jchw.amplifyapp.com/api/auth/google/callback';
+    // Dynamic Callback URL for multiple domains (Amplify + Custom Domain)
+    const host = req.headers.host;
+    let callbackOrigin = 'https://prod.d2pwipsvk7jchw.amplifyapp.com'; // Default fallback
+
+    // Trust the host header if it matches our known domains
+    if (host && (host.includes('lnuais.com') || host.includes('amplifyapp.com'))) {
+        callbackOrigin = `https://${host}`;
+    }
+
+    const callbackURL = `${callbackOrigin}/api/auth/google/callback`;
 
     passport.authenticate('google', {
         scope: ['profile', 'email'],
@@ -26,7 +33,15 @@ router.get('/google', (req, res, next) => {
 
 router.get('/google/callback',
     (req, res, next) => {
-        const callbackURL = 'https://prod.d2pwipsvk7jchw.amplifyapp.com/api/auth/google/callback';
+        const host = req.headers.host;
+        let callbackOrigin = 'https://prod.d2pwipsvk7jchw.amplifyapp.com';
+
+        if (host && (host.includes('lnuais.com') || host.includes('amplifyapp.com'))) {
+            callbackOrigin = `https://${host}`;
+        }
+
+        const callbackURL = `${callbackOrigin}/api/auth/google/callback`;
+
         passport.authenticate('google', {
             failureRedirect: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/signin.html?error=auth_failed`,
             callbackURL: callbackURL
