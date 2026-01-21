@@ -13,8 +13,10 @@ app.enable('trust proxy'); // essential for properly handling X-Forwarded-Proto 
 // Middleware
 app.use(cors({
     origin: [
-        'https://prod.dy1i4sfv0u39q.amplifyapp.com',
+        'https://prod.dy1i4sfv0u39q.amplifyapp.com', // Old one
+        'https://prod.d2pwipsvk7jchw.amplifyapp.com', // Your CURRENT one (from error message)
         'https://prod.dhplo653bqz9b.amplifyapp.com',
+        'https://dgzvl0b4x5nn2.cloudfront.net',      // CloudFront domain
         'http://localhost:3000',
         'http://127.0.0.1:5500',
         'http://localhost:5000'
@@ -50,8 +52,8 @@ app.use(session({
     cookie: {
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
         httpOnly: true,
-        secure: false, // process.env.NODE_ENV === 'production',
-        sameSite: 'lax' // process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+        secure: true, // MUST be true for sameSite: 'none'
+        sameSite: 'none' // MUST be none for cross-site (CloudFront -> Amplify)
     }
 }));
 
